@@ -28,6 +28,7 @@ public class FGame extends ApplicationAdapter implements InputProcessor{
 
 	@Override
 	public void create () {
+		//Витя, ку, ку - обнова v.2.2.2
 		Gdx.input.setInputProcessor(this);
 		File f = new File("cat.txt");
 		File newmap= new File("cat.tmx");

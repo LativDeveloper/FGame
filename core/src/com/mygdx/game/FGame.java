@@ -1,10 +1,12 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -13,18 +15,20 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.io.File;
-import java.io.IOException;
 
 public class FGame extends ApplicationAdapter implements InputProcessor{
 	Stage stage;
 	ScreenViewport viewport;
 	MyPlayer player;
 	Group group;
+	Group group100;
 
 	TiledMap map;
+	Vector2 deflection = new Vector2(0, 0);
+	Vector2 dir = new Vector2(0, 0);
+	Vector2 n = new Vector2(0, 0);
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
-
 
 	@Override
 	public void create () {
@@ -62,9 +66,6 @@ public class FGame extends ApplicationAdapter implements InputProcessor{
 		camera.update();
 		stage.getViewport().update(width, height, true);
 	}
-
-
-	enum MyAction { UP, LEFT, DOWN, RIGHT, JUMP, CUP, CLEFT, CDOWN, CRIGHT}
 
 	@Override
 	public boolean keyDown(int keycode) {
@@ -113,10 +114,6 @@ public class FGame extends ApplicationAdapter implements InputProcessor{
 		return true;
 	}
 
-
-	Vector2 deflection = new Vector2(0, 0);
-	Vector2 dir=new Vector2(0, 0);
-	Vector2 n=new Vector2(0, 0);
 	private void updateCam(float delta){
 		Vector2 p= new Vector2(group.getX(), group.getY());//указатель на начало карты
 		Vector2 a= new Vector2(player.getX(), player.getY());//указатель на игрока относительно карты
@@ -128,6 +125,7 @@ public class FGame extends ApplicationAdapter implements InputProcessor{
 		renderer.setView(camera);
  		renderer.render();
 	}
+
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
 		n=new Vector2(screenX, stage.getViewport().getScreenHeight()-screenY);//координаты курсора в координатах Gdx
@@ -153,6 +151,7 @@ public class FGame extends ApplicationAdapter implements InputProcessor{
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		return false;
 	}
+
 	private void updateView(){
 
 	}
@@ -169,11 +168,13 @@ public class FGame extends ApplicationAdapter implements InputProcessor{
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
 	}
-	
+
 	@Override
 	public void dispose () {
 		stage.dispose();
 	}
+
+	enum MyAction {UP, LEFT, DOWN, RIGHT, JUMP, CUP, CLEFT, CDOWN, CRIGHT}
 
 
 

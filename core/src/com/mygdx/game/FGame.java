@@ -74,6 +74,11 @@ public class FGame extends ApplicationAdapter implements InputProcessor{
 		*/
 	}
 
+	public void method1121() {
+		Vital 's methodfsjlfslkd;fms;f;s,lfs'
+		Это крч мой метод.........которые ниичо не делает...
+	}
+
 	@Override
 	public void resize(int width, int height) {
 		camera.viewportWidth = width;

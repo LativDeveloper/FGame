@@ -21,7 +21,6 @@ public class FGame extends ApplicationAdapter implements InputProcessor{
 	ScreenViewport viewport;
 	MyPlayer player;
 	Group group;
-	Group group100;
 
 	TiledMap map;
 	Vector2 deflection = new Vector2(0, 0);
@@ -32,24 +31,7 @@ public class FGame extends ApplicationAdapter implements InputProcessor{
 
 	@Override
 	public void create () {
-		//Витя, ку, ку - обнова v.2.2.2
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
-		//work
+
 		Gdx.input.setInputProcessor(this);
 		File f = new File("cat.txt");
 		File newmap= new File("cat.tmx");
@@ -72,11 +54,6 @@ public class FGame extends ApplicationAdapter implements InputProcessor{
 		/*Cursor customCursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor.png")), 32, 32);
 		Gdx.graphics.setCursor(customCursor);
 		*/
-	}
-
-	public void method1121() {
-		Vital 's methodfsjlfslkd;fms;f;s,lfs'
-		Это крч мой метод.........которые ниичо не делает...
 	}
 
 	@Override

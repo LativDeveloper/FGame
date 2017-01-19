@@ -32,7 +32,12 @@ public class MyPlayer extends Image {
     Vector2 velocity= new Vector2();
     int[] moves=new int[5];
     float normalspeed=50;
-
+    boolean move = false;
+    MainGameScreen.MyAction direction = MainGameScreen.MyAction.DOWN;
+    Vector2 oldcord;
+    Rectangle[] objects;
+    Vector2 size = new Vector2();
+    Vector2 onscreen = new Vector2();
 
     public MyPlayer(MapLayer collisionlayer){
         setBounds(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
@@ -46,7 +51,8 @@ public class MyPlayer extends Image {
         setCollisionLayer(collisionlayer);
         //current= (Animation) movedown.getKeyFrame(0f);
     }
-    public void setAction(FGame.MyAction action){
+
+    public void setAction(MainGameScreen.MyAction action) {
         switch(action){
             case UP:
                 moves[0]=1;
@@ -79,12 +85,6 @@ public class MyPlayer extends Image {
         Rectangle r= sprite.getBoundingRectangle();
     }
 
-    boolean move=false;
-    FGame.MyAction direction= FGame.MyAction.DOWN;
-    Vector2 oldcord;
-
-    Rectangle[] objects;
-
     public void setCollisionLayer(MapLayer layer){
         MapObjects objects = layer.getObjects();
         this.objects= new Rectangle[objects.getCount()];
@@ -96,6 +96,7 @@ public class MyPlayer extends Image {
             }*/
         }
     }
+
     private void checkOnIntersection(){
         Rectangle bounds = sprite.getBoundingRectangle();
         //bounds.height/=2;
@@ -106,7 +107,6 @@ public class MyPlayer extends Image {
             }
         oldcord=new Vector2(getX(), getY());
     }
-
 
     private void updatestate(float delta){
         MoveByAction mba = new MoveByAction();
@@ -123,18 +123,27 @@ public class MyPlayer extends Image {
             mba.setDuration(0.005f);
         }
         MyPlayer.this.addAction(mba);
-        if(moves[0]+moves[2]>0) {current=moveup; direction = FGame.MyAction.UP;}
-        else if(moves[0]+moves[2]<0) {current=movedown; direction= FGame.MyAction.DOWN;}
-        else if(moves[1]+moves[3]>0) {current=moveright; direction = FGame.MyAction.RIGHT;}
-        else if(moves[1]+moves[3]<0){current=moveleft; direction= FGame.MyAction.LEFT;}
+        if (moves[0] + moves[2] > 0) {
+            current = moveup;
+            direction = MainGameScreen.MyAction.UP;
+        } else if (moves[0] + moves[2] < 0) {
+            current = movedown;
+            direction = MainGameScreen.MyAction.DOWN;
+        } else if (moves[1] + moves[3] > 0) {
+            current = moveright;
+            direction = MainGameScreen.MyAction.RIGHT;
+        } else if (moves[1] + moves[3] < 0) {
+            current = moveleft;
+            direction = MainGameScreen.MyAction.LEFT;
+        }
         checkOnIntersection();
     }
-    Vector2 size=new Vector2();
+
     public void setScreenSize(float width, float height){
         size.x=width;
         size.y=height;
     }
-    Vector2 onscreen=new Vector2();
+
     public void setCordOnScreen(float x, float y){
         onscreen.x=x;
         onscreen.y=y;

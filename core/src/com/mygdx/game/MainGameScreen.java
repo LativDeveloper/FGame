@@ -4,14 +4,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.io.File;
@@ -24,11 +27,11 @@ public class MainGameScreen implements Screen, InputProcessor {
     ScreenViewport viewport;
     MyPlayer player;
     Group group;
-
     TiledMap map;
     Vector2 deflection = new Vector2(0, 0);
     Vector2 dir = new Vector2(0, 0);
     Vector2 n = new Vector2(0, 0);
+    private Label _fpsLabel;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
 
@@ -46,10 +49,14 @@ public class MainGameScreen implements Screen, InputProcessor {
         player = new MyPlayer(map.getLayers().get(2));
         player.setName("me1");
         player.setPosition(100, 100);
+
+        _fpsLabel = new Label("fps: 0", new Label.LabelStyle(new BitmapFont(false), Color.ORANGE));
+
         group = new Group();
         group.addActor(player);
         group.setPosition(100f, 100f);
         stage.addActor(group);
+        stage.addActor(_fpsLabel);
         //player.setCollisionLayer((TiledMapTileLayer) map.getLayers().get("collision"));
         /*Cursor customCursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor.png")), 32, 32);
 		Gdx.graphics.setCursor(customCursor);
@@ -70,6 +77,7 @@ public class MainGameScreen implements Screen, InputProcessor {
         group.setPosition(deflection.x - player.getX() + stage.getViewport().getScreenWidth() / 2,
                 deflection.y - player.getY() + stage.getViewport().getScreenHeight() / 2);
         //camera.position.set(player.getX()+deflection.x, player.getY()+deflection.y, 0);
+        _fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }

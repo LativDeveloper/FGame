@@ -29,6 +29,7 @@ public class FGame extends Game {
 	@Override
 	public void dispose() {
 		_mainGameScreen.dispose();
+		_mainMenuScreen.dispose();
 	}
 
 	public enum ScreenType {

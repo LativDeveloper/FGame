@@ -4,20 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import java.io.File;
 
 /**
  * Created by Vetal on 19.01.2017.
@@ -28,27 +23,38 @@ public class MainGameScreen implements Screen, InputProcessor {
     MyPlayer player;
     Group group;
     TiledMap map;
-    Vector2 deflection = new Vector2(0, 0);
+    private Vector2 _deflection = new Vector2(0, 0);
     Vector2 dir = new Vector2(0, 0);
     Vector2 n = new Vector2(0, 0);
     private Label _fpsLabel;
     private OrthogonalTiledMapRenderer renderer;
-    private OrthographicCamera camera;
+    private OrthographicCamera _camera;
+    private Entity _player;
+    private PlayerController _playerController;
 
     public MainGameScreen() {
-        File f = new File("cat.txt");
-        File newmap = new File("cat.tmx");
-        f.renameTo(newmap);
-        map = new TmxMapLoader().load("map.tmx");
+
+        Utility.loadMapAsset("maps/room.tmx");
+        map = Utility.getMapAsset("maps/room.tmx");
+
+        _camera = new OrthographicCamera();
+//        _camera.setToOrtho(false, 130, 1/16f);
+        _camera.update();
+
         renderer = new OrthogonalTiledMapRenderer(map);
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 30, 20);
+        renderer.setView(_camera);
+
+//        Cursor cursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor.png")), 32,32);
+//        Gdx.graphics.setCursor(cursor);
 
         viewport = new ScreenViewport();
         stage = new Stage(viewport);
         player = new MyPlayer(map.getLayers().get(2));
         player.setName("me1");
         player.setPosition(100, 100);
+
+        _player = new Entity();
+        _playerController = new PlayerController(_player);
 
         _fpsLabel = new Label("fps: 0", new Label.LabelStyle(new BitmapFont(false), Color.ORANGE));
 
@@ -65,18 +71,28 @@ public class MainGameScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(this);
+        Gdx.input.setInputProcessor(_playerController);
     }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Vector2 view = stage.stageToScreenCoordinates(new Vector2(player.getX(), player.getY()));
-        player.setCordOnScreen(view.x, view.y);
+//        Vector2 view = stage.stageToScreenCoordinates(new Vector2(player.getX(), player.getY()));
+//        player.setCordOnScreen(view.x, view.y);
         updateCam(Gdx.graphics.getDeltaTime());
-        group.setPosition(deflection.x - player.getX() + stage.getViewport().getScreenWidth() / 2,
-                deflection.y - player.getY() + stage.getViewport().getScreenHeight() / 2);
-        //camera.position.set(player.getX()+deflection.x, player.getY()+deflection.y, 0);
+        _player.update(delta);
+        _camera.position.set(_player.getPosition().x, _player.getPosition().y, 0);
+        _camera.update();
+
+        renderer.setView(_camera);
+        renderer.render();
+
+        renderer.getBatch().begin();
+        renderer.getBatch().draw(_player.getCurrentFrame(), _player.getPosition().x, _player.getPosition().y, 32, 32);
+        renderer.getBatch().end();
+        group.setPosition(_deflection.x - player.getX() + stage.getViewport().getScreenWidth() / 2,
+                _deflection.y - player.getY() + stage.getViewport().getScreenHeight() / 2);
+        _camera.position.set(player.getX()+ _deflection.x, player.getY()+ _deflection.y, 0);
         _fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
@@ -84,11 +100,11 @@ public class MainGameScreen implements Screen, InputProcessor {
 
     @Override
     public void resize(int width, int height) {
-        camera.viewportWidth = width;
-        camera.viewportHeight = height;
-        camera.position.x = width / 2;
-        camera.position.y = height / 2;
-        camera.update();
+        _camera.viewportWidth = width;
+        _camera.viewportHeight = height;
+        _camera.position.x = width / 2;
+        _camera.position.y = height / 2;
+        _camera.update();
         stage.getViewport().update(width, height, true);
     }
 
@@ -158,17 +174,21 @@ public class MainGameScreen implements Screen, InputProcessor {
         Vector2 p = new Vector2(group.getX(), group.getY());//указатель на начало карты
         Vector2 a = new Vector2(player.getX(), player.getY());//указатель на игрока относительно карты
         dir = new Vector2(p.x + a.x - n.x, p.y + a.y - n.y);
-        deflection.x = (dir.x * 10 - deflection.x) * 0.01f;
-        deflection.y = (dir.y * 10 - deflection.y) * 0.01f;
-        camera.position.set(player.getX() - deflection.x, player.getY() - deflection.y, 0);
-        camera.update();
-        renderer.setView(camera);
+        _deflection.x = (dir.x * 10 - _deflection.x) * 0.01f;
+        _deflection.y = (dir.y * 10 - _deflection.y) * 0.01f;
+        _camera.position.set(player.getX() - _deflection.x, player.getY() - _deflection.y, 0);
+        _camera.update();
+        renderer.setView(_camera);
         renderer.render();
+
+        renderer.getBatch().begin();
+        renderer.getBatch().draw(_player.getCurrentFrame(), _player.getPosition().x, _player.getPosition().y, 1, 1);
+        renderer.getBatch().end();
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        n = new Vector2(screenX, stage.getViewport().getScreenHeight() - screenY);//координаты курсора в координатах Gdx
+//        n = new Vector2(screenX, stage.getViewport().getScreenHeight() - screenY);//координаты курсора в координатах Gdx
         return false;
     }
 
@@ -198,7 +218,7 @@ public class MainGameScreen implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
-        stage.dispose();
+//        stage.dispose();
     }
 
     enum MyAction {UP, LEFT, DOWN, RIGHT, JUMP, CUP, CLEFT, CDOWN, CRIGHT}
